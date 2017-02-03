@@ -8,6 +8,8 @@ macs={}
 subprocess.call('ls /dev/ttyU*', shell=True)
 subprocess.call('touch /tmp/presence', shell=True)
 subprocess.call('chmod 755 /tmp/presence', shell=True)
+subprocess.call('cp known_macs /tmp/known', shell=True)
+subprocess.call('chmod 700 /tmp/known', shell=True)
 serial_device=raw_input('serial device:')
 last_load=time.time()
 load_time=30
@@ -19,7 +21,7 @@ def monitor():
     lastPrint=0
     printInterval=10
     mac_timeout=300
-    known_macs_file=open('known_macs','r').readlines()
+    known_macs_file=open('/tmp/known','r').readlines()
     known_macs={}
     for line in known_macs_file:
         line=line.strip().split(' ',1)
@@ -32,7 +34,7 @@ def monitor():
                 macs[line]=time.time()
         if time.time()-lastPrint > printInterval:
             macs_to_delete=[]
-            tmp_file=open('/tmp/prescence','w')
+            tmp_file=open('/tmp/presence','w')
             for mac in macs:
                 if time.time()-macs[mac] > mac_timeout and mac not in known_macs:
                     macs_to_delete.append(mac)
@@ -48,7 +50,7 @@ def monitor():
             lastPrint=time.time()
             tmp_file.close()
         if time.time()-last_load>load_time:
-            known_macs_file=open('known_macs','r').readlines()
+            known_macs_file=open('/tmp/known','r').readlines()
             known_macs={}
             for line in known_macs_file:
                 line=line.strip().split(' ',1)
