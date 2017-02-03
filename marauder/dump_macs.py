@@ -7,6 +7,21 @@ import sys
 macs={}
 subprocess.call('ls /dev/ttyU*', shell=True)
 serial_device=raw_input('serial device:')
+people=raw_input("who is here? seperate by commas, negate with !")
+output_file=open(raw_input('output filename:'),'w')
+listen_time=raw_input('time to listen for (default 500s):').strip()
+is_digits=True
+if len(listen_time)==0:
+    listen_time=500
+else:
+    for char in listen_time:
+        if not(char.isdigit()):
+            is_digits=False
+if is_digits:
+    listen_time=int(listen_time)
+else:
+    listen_time=500
+start_time=time.time()
 
 def monitor():
     global serial_device
@@ -35,6 +50,19 @@ def monitor():
                     del macs[mac]
             print "\n\n"
             lastPrint=time.time()
+        if time.time()-start_time>listen_time:
+            dump()
+            ser.close()
+            sys.exit(0)
+
+def dump():
+    output_file.write(people)
+    output_file.write("\n")
+    for mac in macs:
+        output_file.write(mac)
+        output_file.write("\n")
+    output_file.close()
+
 
 if __name__=='__main__':
     monitor()
