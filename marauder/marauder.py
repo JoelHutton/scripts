@@ -9,6 +9,7 @@ subprocess.call('ls /dev/ttyU*', shell=True)
 subprocess.call('touch /tmp/prescence', shell=True)
 subprocess.call('cp known_macs /tmp/known', shell=True)
 subprocess.call('chmod 777 /tmp/prescence', shell=True)
+subprocess.call('chmod 777 /tmp/known', shell=True)
 serial_device=raw_input('serial device:')
 last_load=time.time()
 load_time=30
