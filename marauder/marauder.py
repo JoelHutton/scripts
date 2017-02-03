@@ -17,6 +17,7 @@ load_time=30
 def monitor():
     global serial_device
     global macs
+    global last_load
     lastPrint=0
     printInterval=10
     mac_timeout=300
