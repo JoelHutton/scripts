@@ -7,7 +7,7 @@ import sys
 macs={}
 subprocess.call('ls /dev/ttyU*', shell=True)
 serial_device=raw_input('serial device:')
-people=raw_input("who is here? seperate by commas, negate with !")
+people=raw_input("who is here? seperate by commas, negate with ! :")
 output_file=open(raw_input('output filename:'),'w')
 listen_time=raw_input('time to listen for (default 500s):').strip()
 is_digits=True
@@ -28,7 +28,6 @@ def monitor():
     global macs
     lastPrint=0
     printInterval=10
-    mac_timeout=600
     known_macs_file=open('known_macs','r').readlines()
     known_macs={}
     for line in known_macs_file:
@@ -46,16 +45,16 @@ def monitor():
                     print "{} last seen: {} seconds ago".format(known_macs[mac], time.time()-macs[mac]) 
                 else:
                     print "{} last seen: {} seconds ago".format(mac, time.time()-macs[mac]) 
-                if time.time()-macs[mac]>mac_timeout:
-                    del macs[mac]
             print "\n\n"
             lastPrint=time.time()
+            print "sniffing for {}, {} left".format(time.time()-start_time, listen_time-(time.time()-start_time))
         if time.time()-start_time>listen_time:
             dump()
             ser.close()
             sys.exit(0)
 
 def dump():
+    print "dumping to file..."
     output_file.write(people)
     output_file.write("\n")
     for mac in macs:
