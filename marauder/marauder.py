@@ -7,8 +7,11 @@ import sys
 macs={}
 subprocess.call('ls /dev/ttyU*', shell=True)
 subprocess.call('touch /tmp/prescence', shell=True)
+subprocess.call('cp known_macs /tmp/known', shell=True)
 subprocess.call('chmod 777 /tmp/prescence', shell=True)
 serial_device=raw_input('serial device:')
+last_load=time.time()
+load_time=30
 
 def monitor():
     global serial_device
@@ -16,7 +19,7 @@ def monitor():
     lastPrint=0
     printInterval=10
     mac_timeout=300
-    known_macs_file=open('known_macs','r').readlines()
+    known_macs_file=open('/tmp/known','r').readlines()
     known_macs={}
     for line in known_macs_file:
         line=line.strip().split(' ',1)
@@ -44,6 +47,13 @@ def monitor():
             print "\n"
             lastPrint=time.time()
             tmp_file.close()
+        if time.time()-last_load>load_time:
+            known_macs_file=open('/tmp/known','r').readlines()
+            known_macs={}
+            for line in known_macs_file:
+                line=line.strip().split(' ',1)
+                known_macs[line[0]]=line[1]
+            last_load=time.time()
 
 if __name__=='__main__':
     monitor()
