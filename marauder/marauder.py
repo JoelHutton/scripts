@@ -10,7 +10,8 @@ subprocess.call('touch /tmp/presence', shell=True)
 subprocess.call('chmod 755 /tmp/presence', shell=True)
 subprocess.call('cp known_macs /tmp/known', shell=True)
 subprocess.call('chmod 700 /tmp/known', shell=True)
-serial_device=raw_input('serial device:')
+#serial_device=raw_input('serial device:')
+serial_device='/dev/ttyUSB0'
 last_load=time.time()
 load_time=30
 
@@ -42,8 +43,14 @@ def monitor():
                 del macs[mac]
             for mac in known_macs:
                 if mac in macs:
-                    print "{} last seen: {} seconds ago".format(known_macs[mac], time.time()-macs[mac]) 
-                    tmp_file.write("{} last seen: {} seconds ago\n".format(known_macs[mac], time.time()-macs[mac]))
+                    total_seconds=int(time.time()-macs[mac])
+                    seconds=total_seconds%60
+                    minutes=(total_seconds/60)%60
+                    hours=(total_seconds/3600)
+                    formatted_time=datetime.datetime.fromtimestamp(known_macs[mac]).strftime('%Y-%m-%d %H:%M:%S')
+                    printstr="{} last seen: {}:{}:{} ago at {}".format(known_macs[mac], hours, minutes, seconds) 
+                    print printstr
+                    tmp_file.write(printstr+"\n")
             print "busyness index is {}".format(len(macs))
             tmp_file.write("busyness index is {}\n".format(len(macs)))
             print "\n"
