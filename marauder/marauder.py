@@ -2,6 +2,7 @@
 import subprocess
 import serial
 import time
+import datetime
 import sys
 
 macs={}
@@ -14,11 +15,13 @@ subprocess.call('chmod 700 /tmp/known', shell=True)
 serial_device='/dev/ttyUSB0'
 last_load=time.time()
 load_time=30
+longest_name=0
 
 def monitor():
     global serial_device
     global macs
     global last_load
+    global longest_name
     lastPrint=0
     printInterval=10
     mac_timeout=300
@@ -27,6 +30,7 @@ def monitor():
     for line in known_macs_file:
         line=line.strip().split(' ',1)
         known_macs[line[0]]=line[1]
+        if len(line[1])>longest_name:longest_name=len(line[1])
     ser = serial.Serial(serial_device, 115200)  # open serial port
     while True:
         line=ser.readline().strip()
@@ -44,11 +48,17 @@ def monitor():
             for mac in known_macs:
                 if mac in macs:
                     total_seconds=int(time.time()-macs[mac])
-                    seconds=total_seconds%60
-                    minutes=(total_seconds/60)%60
-                    hours=(total_seconds/3600)
-                    formatted_time=datetime.datetime.fromtimestamp(known_macs[mac]).strftime('%Y-%m-%d %H:%M:%S')
-                    printstr="{} last seen: {}:{}:{} ago at {}".format(known_macs[mac], hours, minutes, seconds) 
+                    seconds=str(total_seconds%60)
+                    minutes=str((total_seconds/60)%60)
+                    hours=str(total_seconds/3600)
+                    days=str(total_seconds/(3600*24))
+                    if len(seconds)==1:seconds="0"+seconds
+                    if len(minutes)==1:minutes="0"+minutes
+                    if len(hours)==1:hours="0"+hours
+                    if len(days)==1:days="0"+days
+                    formatted_time=datetime.datetime.fromtimestamp(macs[mac]).strftime('%Y-%m-%d %H:%M:%S')
+                    padding= " "*(longest_name-(len(known_macs[mac])))
+                    printstr="{} {}last seen: {} days {}:{}:{} ago at {}".format(known_macs[mac], padding, days, hours, minutes, seconds, formatted_time) 
                     print printstr
                     tmp_file.write(printstr+"\n")
             print "busyness index is {}".format(len(macs))
@@ -62,6 +72,7 @@ def monitor():
             for line in known_macs_file:
                 line=line.strip().split(' ',1)
                 known_macs[line[0]]=line[1]
+                if len(line[1])>longest_name:longest_name=len(line[1])
             last_load=time.time()
 
 if __name__=='__main__':
