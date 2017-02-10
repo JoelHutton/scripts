@@ -67,15 +67,17 @@ def monitor():
             for p in sorted(printstrs):
                 print p[1]
                 tmp_file.write(p[1]+"\n")
-            print "busyness index is {}".format(len(macs))
             time_since_start=int(time.time()-started)
             days=(time_since_start/(3600*24))
             hours=(time_since_start/3600)%24
             minutes=((time_since_start/60)%60)
             seconds=(time_since_start%60)
-            print "uptime is {} days {}:{}:{}".format(days, hours, minutes, seconds)
-            tmp_file.write("busyness index is {}\n".format(len(macs)))
-            tmp_file.write("uptime is {}".format(time.time()-started))
+            uptime="uptime is {} days {}:{}:{}".format(days, hours, minutes, seconds)
+            busyness="busyness index is {}".format(len(macs))
+            print busyness
+            print uptime
+            tmp_file.write(busyness+"\n")
+            tmp_file.write(uptime+"\n")
             print "\n"
             lastPrint=time.time()
             tmp_file.close()
