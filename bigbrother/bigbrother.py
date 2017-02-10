@@ -22,6 +22,7 @@ def monitor():
     global macs
     global last_load
     global longest_name
+    started=time.time()
     lastPrint=0
     printInterval=10
     mac_timeout=300
@@ -45,24 +46,36 @@ def monitor():
                     macs_to_delete.append(mac)
             for mac in macs_to_delete:
                 del macs[mac]
+            printstrs=[]
             for mac in known_macs:
+                total_seconds=0
+                last_seen=0
                 if mac in macs:
-                    total_seconds=int(time.time()-macs[mac])
-                    seconds=str(total_seconds%60)
-                    minutes=str((total_seconds/60)%60)
-                    hours=str(total_seconds/3600)
-                    days=str(total_seconds/(3600*24))
-                    if len(seconds)==1:seconds="0"+seconds
-                    if len(minutes)==1:minutes="0"+minutes
-                    if len(hours)==1:hours="0"+hours
-                    if len(days)==1:days="0"+days
-                    formatted_time=datetime.datetime.fromtimestamp(macs[mac]).strftime('%Y-%m-%d %H:%M:%S')
-                    padding= " "*(longest_name-(len(known_macs[mac])))
-                    printstr="{} {}last seen: {} days {}:{}:{} ago at {}".format(known_macs[mac], padding, days, hours, minutes, seconds, formatted_time) 
-                    print printstr
-                    tmp_file.write(printstr+"\n")
+                    last_seen=macs[mac]
+                total_seconds=int(time.time()-last_seen)
+                seconds=str(total_seconds%60)
+                minutes=str((total_seconds/60)%60)
+                hours=str((total_seconds/3600)%24)
+                days=str(total_seconds/(3600*24))
+                if len(seconds)==1:seconds="0"+seconds
+                if len(minutes)==1:minutes="0"+minutes
+                if len(hours)==1:hours="0"+hours
+                if len(days)==1:days="0"+days
+                formatted_time=datetime.datetime.fromtimestamp(last_seen).strftime('%Y-%m-%d %H:%M:%S')
+                padding= " "*(longest_name-(len(known_macs[mac])))
+                printstrs.append((last_seen,"{} {}last seen: {} days {}:{}:{} ago at {}".format(known_macs[mac], padding, days, hours, minutes, seconds, formatted_time))) 
+            for p in sorted(printstrs):
+                print p[1]
+                tmp_file.write(p[1]+"\n")
             print "busyness index is {}".format(len(macs))
+            time_since_start=int(time.time()-started)
+            days=(time_since_start/(3600*24))
+            hours=(time_since_start/3600)%24
+            minutes=((time_since_start/60)%60)
+            seconds=(time_since_start%60)
+            print "uptime is {} days {}:{}:{}".format(days, hours, minutes, seconds)
             tmp_file.write("busyness index is {}\n".format(len(macs)))
+            tmp_file.write("uptime is {}".format(time.time()-started))
             print "\n"
             lastPrint=time.time()
             tmp_file.close()
