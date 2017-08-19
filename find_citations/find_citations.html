@@ -1,0 +1,33 @@
+<html>
+    <head>
+        <script type="text/javascript">
+            function find(){
+                processed_text=document.getElementById("textbox").value;
+                previous=""
+                //eliminate lines with no '('
+                processed_text=processed_text.replace(/^[^\(]*/gm, '');
+                //strip out the brackets
+                processed_text=processed_text.replace(/[^\(]*(\([^\)]*\))[^\(]*/gm, '\n\$1\n');
+                document.getElementById("textbox").value=processed_text;
+                countWords();
+            }
+            function countWords(){
+                s = document.getElementById("textbox").value;
+                s = s.replace(/[^a-zA-Z0-9]/gm," ");
+                s = s.replace(/[ ]{2,}/gi," ");
+                document.getElementById("wordcount").innerHTML = s.split(' ').length;
+                alert("Your citation word count is "+s.split(' ').length+" . Please check everything that has been found is a citation and click the button again");
+            }
+        </script>
+    </head>
+
+    <body>
+        <textarea id="textbox" style="height:90%;width:100%;"></textarea>
+        <input type="button" value="magically find citations" onclick="find()"/>
+        <table>
+            <tr>
+                <td>Word Count:</td><td id="wordcount"></td>
+            </tr>
+        </table>
+    </body>
+</html>
