@@ -1,0 +1,8 @@
+#!/bin/bash
+BEEP=/usr/share/sounds/ubuntu/stereo/bell.ogg
+if [ -z $SUDO_USER ]
+then
+	paplay $BEEP
+else
+	sudo -u $SUDO_USER paplay $BEEP
+fi
