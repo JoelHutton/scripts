@@ -4,11 +4,11 @@ FILES=`git diff HEAD  --name-only`
 
 YEAR=`date +"%Y"`
 while read -r FILE; do
-	if grep "Copyright.*$YEAR" "$FILE">/dev/null
+	if grep "opyright.*$YEAR.*\(ARM\|Arm\|arm\)" "$FILE">/dev/null
 	then
 		echo "$FILE:File already correctly copyrighted"
 	else
-		if grep "Copyright" "$FILE" >/dev/null
+		if grep "opyright.*\(ARM\|Arm\|arm\)" "$FILE" >/dev/null
 		then
 			#change year range to startyear-current year
 			sed -i "s/\(opyright[^0-9]*[0-9][0-9][0-9][0-9]-\)\([0-9][0-9][0-9][0-9]\)\(.*ARM\|.*Arm\|.*arm\)/\1$YEAR\3/" $FILE
@@ -18,7 +18,7 @@ while read -r FILE; do
 			echo "Changed copyright year of: $FILE"
 			git add "$FILE"
 		else
-			echo "No copyright in file"
+			echo "No Arm copyright in file"
 			exit -1
 		fi
 	fi
