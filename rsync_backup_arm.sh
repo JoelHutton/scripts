@@ -1,6 +1,10 @@
 #!/bin/bash
 
 set -x
+if [[ $EUID -ne 0 ]]; then
+   echo "This script must be run as root" 
+   exit 1
+fi
 
 DATE=`date "+%Y-%m-%dT%H:%M:%S"`
 HOST=`cat /etc/hostname`
@@ -22,7 +26,7 @@ fi
 # r - recursive
 # P - partial, pickup partial copies
 # z - use zip compression to speedup transfer
-(sudo rsync -arvzPx \
+(rsync -arvzPx \
 	--rsync-path="rsync --fake-super"\
 	--exclude /home/joehut01/Downloads \
 	--exclude /tmp --exclude /mnt \
