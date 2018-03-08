@@ -52,9 +52,8 @@ ssh $REMOTE "rm -rf $BACKUP_PATH/$HOST""_current" &&\
 ssh $REMOTE "ln -s $BACKUP_PATH/$BACKUP_NAME $BACKUP_PATH/$HOST""_current") ||\
 	(echo "Backup failed" >&2 && exit 1)
 
-#restore command to restore whole root dir (not yet tested on root dir)
 #sudo rsync -arvzPx \
 #	--delete\
 #	--rsync-path="rsync --fake-super"\
-#	"$REMOTE:$BACKUP_PATH/$HOST""_current"/
+#	"$REMOTE:$BACKUP_PATH/$HOST""_current"/*
 #	/
