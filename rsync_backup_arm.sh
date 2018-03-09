@@ -22,7 +22,6 @@ else
 	exit 1
 fi
 
-exit 0
 if ssh $REMOTE "ls $BACKUP_PATH/$HOST""_current" 2>&1 1>/dev/null
 then
 	:
