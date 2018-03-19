@@ -4,6 +4,10 @@ FILES=`git diff HEAD  --name-only`
 
 YEAR=`date +"%Y"`
 while read -r FILE; do
+	if [ -z "$FILE" ]
+	then 
+		break
+	fi
 	if grep "opyright.*$YEAR.*\(ARM\|Arm\|arm\)" "$FILE">/dev/null
 	then
 		echo "$FILE:File already correctly copyrighted"

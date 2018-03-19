@@ -31,19 +31,25 @@ else
 fi
 
 # rsync backup, then move 'current' link to point at backup
-# x - don't cross file system boundaries
 # a - archive (preserve permissions, symlinks etc.)
+# A - preserve ACLs (Access control lists)
 # r - recursive
-# P - partial, pickup partial copies
+# v - verbose
 # z - use zip compression to speedup transfer
-(rsync -arvzPx \
+# P - partial, pickup partial copies
+# H - preserve hard links
+# x - don't cross filesystem boundaries
+# X - preserve extended attributes
+(rsync -aArvzPHxX \
 	--rsync-path="rsync --fake-super"\
 	--exclude /home/joehut01/Downloads \
 	--exclude /tmp --exclude /mnt \
 	--exclude /media --exclude /proc \
 	--exclude /arm --exclude /run \
 	--exclude /dev --exclude /home/joehut01/.cache \
-	--exclude /sys --exclude $HOME/.ssh/\
+	--exclude /sys --exclude /home/joehut01/.ssh/\
+	--exclude /home/joehut01/tmp\
+	--exclude "/home/joehut01/VirtualBox VMs" --exclude /lost+found\
 	/ \
 	--link-dest="$BACKUP_PATH/$HOST""_current" \
 	$REMOTE:$BACKUP_PATH/$BACKUP_NAME &&\
@@ -51,8 +57,9 @@ ssh $REMOTE "rm -rf $BACKUP_PATH/$HOST""_current" &&\
 ssh $REMOTE "ln -s $BACKUP_PATH/$BACKUP_NAME $BACKUP_PATH/$HOST""_current") ||\
 	(echo "Backup failed" >&2 && exit 1)
 
-#sudo rsync -arvzPx \
-#	--delete\
-#	--rsync-path="rsync --fake-super"\
-#	"$REMOTE:$BACKUP_PATH/$HOST""_current"/*
-#	/
+# to restore
+# sudo rsync -arvzPHx \
+# 	--delete\
+# 	--rsync-path="rsync --fake-super"\
+# 	"$REMOTE:$BACKUP_PATH/$HOST""_current"/*
+# 	/
