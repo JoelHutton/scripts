@@ -5,7 +5,7 @@ FILES=`git diff HEAD  --name-only`
 YEAR=`date +"%Y"`
 while read -r FILE; do
 	if [ -z "$FILE" ]
-	then 
+	then
 		break
 	fi
 	if grep "opyright.*$YEAR.*\(ARM\|Arm\|arm\)" "$FILE">/dev/null
@@ -23,7 +23,7 @@ while read -r FILE; do
 			git add "$FILE"
 		else
 			echo "No Arm copyright in file"
-			exit -1
+			exit 0
 		fi
 	fi
 done <<< "$FILES"
