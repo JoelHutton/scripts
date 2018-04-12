@@ -26,8 +26,12 @@ if ssh $REMOTE "ls $BACKUP_PATH/$HOST""_current" 2>&1 1>/dev/null
 then
 	:
 else
-	ssh $REMOTE "mkdir $BACKUP_PATH/$HOST""_current" || \
-		(echo "Could not create $HOST""_current on $REMOTE" && exit 1)
+	ssh $REMOTE "mkdir $BACKUP_PATH/$HOST""_current"
+	if [[ "$?" -ne "0" ]]
+	then
+		echo "Could not create $HOST""_current on $REMOTE" >&2
+		exit 1
+	fi
 fi
 
 # rsync backup, then move 'current' link to point at backup
@@ -40,7 +44,7 @@ fi
 # H - preserve hard links
 # x - don't cross filesystem boundaries
 # X - preserve extended attributes
-(rsync -aArvzPHxX \
+rsync -aArvzPHxX \
 	--rsync-path="rsync --fake-super"\
 	--exclude /home/joehut01/Downloads \
 	--exclude /tmp --exclude /mnt \
@@ -48,14 +52,20 @@ fi
 	--exclude /arm --exclude /run \
 	--exclude /dev --exclude /home/joehut01/.cache \
 	--exclude /sys --exclude /home/joehut01/.ssh/\
-	--exclude /home/joehut01/tmp\
+	--exclude /home/joehut01/tmp --exclude /root/.ssh\
 	--exclude "/home/joehut01/VirtualBox VMs" --exclude /lost+found\
 	/ \
 	--link-dest="$BACKUP_PATH/$HOST""_current" \
 	$REMOTE:$BACKUP_PATH/$BACKUP_NAME &&\
+
+if [[ "$?" -ne "0" ]]
+then
+	echo "Backup failed" >&2
+	exit 1
+fi
+
 ssh $REMOTE "rm -rf $BACKUP_PATH/$HOST""_current" &&\
-ssh $REMOTE "ln -s $BACKUP_PATH/$BACKUP_NAME $BACKUP_PATH/$HOST""_current") ||\
-	(echo "Backup failed" >&2 && exit 1)
+ssh $REMOTE "ln -s $BACKUP_PATH/$BACKUP_NAME $BACKUP_PATH/$HOST""_current"
 
 # to restore
 # sudo rsync -arvzPHx \
