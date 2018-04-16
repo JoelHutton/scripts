@@ -1,6 +1,6 @@
 #!/bin/bash
 
-set -x
+set -e
 
 if [[ -z $1 ]]
 then
@@ -13,8 +13,6 @@ then
 else
 	filename=$2
 fi
-
-
 
 scp $1 e115011-lin.cambridge.arm.com:/pub/$filename
 ssh e115011-lin.cambridge.arm.com "chmod 444 /pub/$filename"
