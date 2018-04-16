@@ -1,6 +1,7 @@
 #!/bin/bash
 
 set -x
+
 if [[ $EUID -ne 0 ]]; then
    echo "This script must be run as root" >&2
    exit 1
@@ -54,9 +55,10 @@ rsync -aArvzPHxX \
 	--exclude /sys --exclude /home/joehut01/.ssh/\
 	--exclude /home/joehut01/tmp --exclude /root/.ssh\
 	--exclude "/home/joehut01/VirtualBox VMs" --exclude /lost+found\
+	--exclude /home/joehut01/.local/share/Trash\
 	/ \
 	--link-dest="$BACKUP_PATH/$HOST""_current" \
-	$REMOTE:$BACKUP_PATH/$BACKUP_NAME &&\
+	$REMOTE:$BACKUP_PATH/$BACKUP_NAME
 
 if [[ "$?" -ne "0" ]]
 then
