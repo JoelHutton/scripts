@@ -1,6 +1,5 @@
 #!/bin/bash
 
-set -x
 set -e
 
 DATE=`date "+%Y-%m-%dT%H:%M:%S"`
