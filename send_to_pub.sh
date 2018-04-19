@@ -1,19 +1,27 @@
 #!/bin/bash
 
+set -x
 set -e
 
-if [[ -z $1 ]]
+DATE=`date "+%Y-%m-%dT%H:%M:%S"`
+if [[ -z "$1" ]]
 then
-	echo "specify the file to copy"
+	echo "specify the file to copy" >&2
 	exit 1
 fi
-if [[ -z $2 ]]
+if [[ -z "$2" ]]
 then
-	filename=`basename $1`
+	filename="$DATE"_`basename $1`
 else
 	filename=$2
 fi
+if [[ -z "$SVALBARD_USER" ]]
+then
+	echo "set SVALBARD_USER variable" >&2
+	exit 1
+fi
+WEB_PATH=/usr/local/www/nginx/$SVALBARD_USER
 
-scp $1 e115011-lin.cambridge.arm.com:/pub/$filename
-ssh e115011-lin.cambridge.arm.com "chmod 444 /pub/$filename"
-echo "http://e115011-lin.cambridge.arm.com/$filename"
+scp $1 $SVALBARD_USER@svalbard.cambridge.arm.com:$WEB_PATH/$filename
+ssh $SVALBARD_USER@svalbard.cambridge.arm.com "chmod 444 $WEB_PATH/$filename"
+echo "http://svalbard.cambridge.arm.com/$SVALBARD_USER/$filename"
