@@ -23,4 +23,5 @@ WEB_PATH=/usr/local/www/nginx/$SVALBARD_USER
 
 scp $1 $SVALBARD_USER@svalbard.cambridge.arm.com:$WEB_PATH/$filename
 ssh $SVALBARD_USER@svalbard.cambridge.arm.com "chmod 644 $WEB_PATH/$filename"
-echo "http://svalbard.cambridge.arm.com/$SVALBARD_USER/$filename"
+echo "http://svalbard.cambridge.arm.com/$SVALBARD_USER/$filename" | xsel -ib
+echo "link copied to clipboard"
