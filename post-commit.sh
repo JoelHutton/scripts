@@ -3,5 +3,8 @@ if [ -z "$CHECKPATCH" ]
 then
 	echo "set your checkpatch"
 else
-	make checkpatch
+	if make help | grep 'checkpatch' > /dev/null
+	then
+		make checkpatch
+	fi
 fi	
