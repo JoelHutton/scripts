@@ -9,7 +9,7 @@ else
 	fi
 fi	
 
-FILES=`git diff HEAD HEAD~2 --name-only`
+FILES=`git diff HEAD HEAD~1 --name-only`
 YEAR=`date +"%Y"`
 
 YEAR_RGX="[0-9][0-9][0-9][0-9]"
@@ -33,4 +33,25 @@ while read -r FILE; do
 			grep -nr "opyright.*$ARM_RGX" "$FILE"
 		fi
 	fi
+	RED="\033[00;31m"
+	BLANK="\033[00;00m"
+	if echo "$FILE" | grep ".*c\|.*h" > /dev/null 2>&1
+	then
+		if git diff HEAD~1 $FILE | grep '//' > /dev/null 2>&1
+		then
+			MESSAGE="Double slash commenting in $FILE"
+			echo -e "$RED$MESSAGE$BLANK"
+			SLASH_COMMENTS=`git diff HEAD~1 $FILE | grep '//'`
+			echo -e "$RED$SLASH_COMMENTS$BLANK"
+		fi
+		GREP_EXPR="/\*[^$\ *]\|[^$\ *]\*/"
+		if git diff HEAD~1 $FILE | grep "$GREP_EXPR" > /dev/null 2>&1
+		then
+			MESSAGE="Spaces around comments in $FILE"
+			echo -e "$RED$MESSAGE$BLANK"
+			SLASH_COMMENTS=`git diff HEAD~1 $FILE | grep "$GREP_EXPR"`
+			echo -e "$RED$SLASH_COMMENTS$BLANK"
+		fi
+	fi
 done <<< "$FILES"
+
