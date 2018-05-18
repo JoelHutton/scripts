@@ -1,6 +1,6 @@
 #!/bin/bash
 
-FILES=`git diff HEAD  --name-only`
+FILES=`git diff HEAD HEAD~2 --name-only`
 YEAR=`date +"%Y"`
 
 YEAR_RGX="[0-9][0-9][0-9][0-9]"
@@ -25,8 +25,7 @@ while read -r FILE; do
 			echo "Changed copyright year of: $FILE"
 			git add "$FILE"
 		else
-			echo "No Arm copyright in file"
-			exit 0
+			echo "No Arm copyright in file $FILE"
 		fi
 	fi
 done <<< "$FILES"
