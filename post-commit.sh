@@ -1,4 +1,9 @@
 #!/bin/bash
+
+# Copyright 2017 Arm
+
+RED="\033[00;31m"
+BLANK="\033[00;00m"
 if [ -z "$CHECKPATCH" ]
 then
 	echo "set your checkpatch"
@@ -20,27 +25,22 @@ while read -r FILE; do
 	then
 		break
 	fi
+	# Check copyright
 	if ! grep "opyright.*$YEAR.*$ARM_RGX" "$FILE">/dev/null 2>&1
 	then
 		if grep "opyright.*$YEAR_RGX.*$ARM_RGX" "$FILE" >/dev/null 2>&1
 		then
-			#change year range to startyear-current year
-			#sed -i "s/\(opyright.*$YEAR_RGX-\)\($YEAR_RGX\)\(.*$ARM_RGX\)/\1$YEAR\3/" $FILE
-
-			#change single year to year-current year
-			#sed -i "s/\(opyright.*[^\-]$YEAR_RGX\)\([^\-]\)\(.*$ARM_RGX\)/\1-$YEAR\2\3/" $FILE
-			echo "Copyright of $FILE needs updated"
-			grep -nr "opyright.*$ARM_RGX" "$FILE"
+			echo -e "Copyright of $RED$FILE$BLANK needs updated"
+			grep -nr "opyright.*$YEAR_RGX.*$ARM_RGX" "$FILE"
 		fi
 	fi
-	RED="\033[00;31m"
-	BLANK="\033[00;00m"
+	# Check comments
 	if echo "$FILE" | grep ".*c\|.*h" > /dev/null 2>&1
 	then
 		if git diff HEAD~1 $FILE | grep '//' > /dev/null 2>&1
 		then
-			MESSAGE="Double slash commenting in $FILE"
-			echo -e "$RED$MESSAGE$BLANK"
+			MESSAGE="Double slash commenting in $RED$FILE$BLANK"
+			echo -e "$MESSAGE"
 			SLASH_COMMENTS=`git diff HEAD~1 $FILE | grep '//'`
 			echo -e "$RED$SLASH_COMMENTS$BLANK"
 		fi
