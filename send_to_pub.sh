@@ -21,7 +21,12 @@ then
 fi
 WEB_PATH=/usr/local/www/nginx/$SVALBARD_USER
 
-scp $1 $SVALBARD_USER@svalbard.cambridge.arm.com:$WEB_PATH/$filename
-ssh $SVALBARD_USER@svalbard.cambridge.arm.com "chmod 644 $WEB_PATH/$filename"
+if [ -d "$1" ] ; then
+	scp -r $1 $SVALBARD_USER@svalbard.cambridge.arm.com:$WEB_PATH/$filename
+	ssh $SVALBARD_USER@svalbard.cambridge.arm.com "chmod -R 755 $WEB_PATH/$filename"
+else
+	scp $1 $SVALBARD_USER@svalbard.cambridge.arm.com:$WEB_PATH/$filename
+	ssh $SVALBARD_USER@svalbard.cambridge.arm.com "chmod 644 $WEB_PATH/$filename"
+fi
 echo "http://svalbard.cambridge.arm.com/$SVALBARD_USER/$filename" | xsel -ib
 echo "link copied to clipboard"
