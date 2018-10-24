@@ -1,7 +1,5 @@
 #!/bin/bash
 
-# Copyright 2017 Arm
-
 RED="\033[00;31m"
 BLANK="\033[00;00m"
 if [ -z "$CHECKPATCH" ]
@@ -35,9 +33,9 @@ while read -r FILE; do
 		fi
 	fi
 	# Check comments
-	if echo "$FILE" | grep ".*c\|.*h" > /dev/null 2>&1
+	if echo "$FILE" | grep ".*\.c\|.*\.h" > /dev/null 2>&1
 	then
-		if git diff HEAD~1 $FILE | grep '//' > /dev/null 2>&1
+		if git diff HEAD~1 HEAD $FILE | grep '//' > /dev/null 2>&1
 		then
 			MESSAGE="Double slash commenting in $RED$FILE$BLANK"
 			echo -e "$MESSAGE"
@@ -45,7 +43,7 @@ while read -r FILE; do
 			echo -e "$RED$SLASH_COMMENTS$BLANK"
 		fi
 		GREP_EXPR="/\*[^$\ *]\|[^$\ *]\*/"
-		if git diff HEAD~1 $FILE | grep "$GREP_EXPR" > /dev/null 2>&1
+		if git diff HEAD~1 HEAD $FILE | grep "$GREP_EXPR" > /dev/null 2>&1
 		then
 			MESSAGE="Spaces around comments in $FILE"
 			echo -e "$RED$MESSAGE$BLANK"
