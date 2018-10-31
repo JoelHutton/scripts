@@ -33,21 +33,21 @@ while read -r FILE; do
 		fi
 	fi
 	# Check comments
-	if echo "$FILE" | grep ".*\.c\|.*\.h" > /dev/null 2>&1
+	if echo "$FILE" | grep ".*\.c\|.*\.h\|.*\.S" > /dev/null 2>&1
 	then
-		if git diff HEAD~1 HEAD $FILE | grep '//' > /dev/null 2>&1
+		if git diff HEAD~1 HEAD $FILE | grep '//' | grep '^+' > /dev/null 2>&1
 		then
 			MESSAGE="Double slash commenting in $RED$FILE$BLANK"
 			echo -e "$MESSAGE"
-			SLASH_COMMENTS=`git diff HEAD~1 $FILE | grep '//'`
+			SLASH_COMMENTS=`git diff HEAD~1 $FILE | grep '//' | grep '^+'`
 			echo -e "$RED$SLASH_COMMENTS$BLANK"
 		fi
 		GREP_EXPR="/\*[^$\ *]\|[^$\ *]\*/"
-		if git diff HEAD~1 HEAD $FILE | grep "$GREP_EXPR" > /dev/null 2>&1
+		if git diff HEAD~1 HEAD $FILE | grep "$GREP_EXPR" | grep '^+' > /dev/null 2>&1
 		then
 			MESSAGE="Spaces around comments in $FILE"
 			echo -e "$RED$MESSAGE$BLANK"
-			SLASH_COMMENTS=`git diff HEAD~1 $FILE | grep "$GREP_EXPR"`
+			SLASH_COMMENTS=`git diff HEAD~1 $FILE | grep "$GREP_EXPR" | grep '^+'`
 			echo -e "$RED$SLASH_COMMENTS$BLANK"
 		fi
 	fi
