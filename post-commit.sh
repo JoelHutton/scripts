@@ -39,13 +39,21 @@ while read -r FILE; do
 		then
 			MESSAGE="Double slash commenting in $RED$FILE$BLANK"
 			echo -e "$MESSAGE"
-			SLASH_COMMENTS=`git diff HEAD~1 $FILE | grep '//' | grep '^+'`
+			SLASH_COMMENTS=`git diff HEAD~1 $FILE | grep '//' | grep '^+\s'`
 			echo -e "$RED$SLASH_COMMENTS$BLANK"
 		fi
 		GREP_EXPR="/\*[^$\ *]\|[^$\ *]\*/"
-		if git diff HEAD~1 HEAD $FILE | grep "$GREP_EXPR" | grep '^+' > /dev/null 2>&1
+		if git diff HEAD~1 HEAD $FILE | grep "$GREP_EXPR" | grep '^+\s' > /dev/null 2>&1
 		then
 			MESSAGE="Spaces around comments in $FILE"
+			echo -e "$RED$MESSAGE$BLANK"
+			SLASH_COMMENTS=`git diff HEAD~1 $FILE | grep "$GREP_EXPR" | grep '^+'`
+			echo -e "$RED$SLASH_COMMENTS$BLANK"
+		fi
+		GREP_EXPR="[a-zA-Z0-9][+\-\/%][a-zA-Z0-9]"
+		if git diff HEAD~1 HEAD $FILE | grep "$GREP_EXPR" | grep '^+\s' > /dev/null 2>&1
+		then
+			MESSAGE="No space around operator $FILE"
 			echo -e "$RED$MESSAGE$BLANK"
 			SLASH_COMMENTS=`git diff HEAD~1 $FILE | grep "$GREP_EXPR" | grep '^+'`
 			echo -e "$RED$SLASH_COMMENTS$BLANK"
