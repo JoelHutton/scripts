@@ -1,5 +1,5 @@
 #!/bin/bash
-
+#Put in crontab with something like "30 10,16 * * 1-5 /home/joel/git/scripts/rsync_backup_arm.sh >/tmp/rsync_log 2>&1 || echo "echo backup failed" >> /home/joel/.zshrc"
 set -x
 
 if [[ $EUID -ne 0 ]]; then
@@ -7,12 +7,13 @@ if [[ $EUID -ne 0 ]]; then
    exit 1
 fi
 
+USER=joel
 DATE=`date "+%Y-%m-%dT%H:%M:%S"`
 HOST=`cat /etc/hostname`
 BACKUP_NAME="$HOST""_$DATE"
-BACKUP_PATH=/data/backups/rsync
-REMOTE_USER=joehut01
-REMOTE_MACHINE=e115011-lin.cambridge.arm.com
+BACKUP_PATH=/media/data/backups/rsync
+REMOTE_USER=joel
+REMOTE_MACHINE=staticbeans.cambridge.arm.com
 REMOTE=$REMOTE_USER@$REMOTE_MACHINE
 
 if ping -c 1 $REMOTE_MACHINE
@@ -47,15 +48,15 @@ fi
 # X - preserve extended attributes
 rsync -aArvzPHxX \
 	--rsync-path="rsync --fake-super"\
-	--exclude /home/joehut01/Downloads \
+	--exclude /home/$USER/Downloads \
 	--exclude /tmp --exclude /mnt \
 	--exclude /media --exclude /proc \
 	--exclude /arm --exclude /run \
-	--exclude /dev --exclude /home/joehut01/.cache \
-	--exclude /sys --exclude /home/joehut01/.ssh/\
-	--exclude /home/joehut01/tmp --exclude /root/.ssh\
-	--exclude "/home/joehut01/VirtualBox VMs" --exclude /lost+found\
-	--exclude /home/joehut01/.local/share/Trash\
+	--exclude /dev --exclude /home/$USER/.cache \
+	--exclude /sys --exclude /home/$USER/.ssh/\
+	--exclude /home/$USER/tmp --exclude /root/.ssh\
+	--exclude "/home/$USER/VirtualBox VMs" --exclude /lost+found\
+	--exclude /home/$USER/.local/share/Trash\
 	/ \
 	--link-dest="$BACKUP_PATH/$HOST""_current" \
 	$REMOTE:$BACKUP_PATH/$BACKUP_NAME
