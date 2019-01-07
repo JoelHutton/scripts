@@ -56,7 +56,7 @@ rsync -aArvzPHxX \
 	--exclude /sys --exclude /home/$USER/.ssh/\
 	--exclude /home/$USER/tmp --exclude /root/.ssh\
 	--exclude "/home/$USER/VirtualBox VMs" --exclude /lost+found\
-	--exclude /home/$USER/.local/share/Trash\
+	--exclude /home/$USER/.local/share/Trash --exclude /home/$USER/pCloudDrive\
 	/ \
 	--link-dest="$BACKUP_PATH/$HOST""_current" \
 	$REMOTE:$BACKUP_PATH/$BACKUP_NAME
