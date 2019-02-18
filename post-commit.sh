@@ -32,6 +32,13 @@ while read -r FILE; do
 			grep -nr "opyright.*$YEAR_RGX.*$ARM_RGX" "$FILE"
 		fi
 	fi
+	# Check for trailing space
+	if grep -nr '\s$' $FILE >/dev/null 2>&1
+	then
+		MESSAGE="trailing whitespace in $RED$FILE$BLANK...gross"
+		echo -e "$MESSAGE"
+		grep -nr '\s$' $FILE
+	fi
 	# Check comments
 	if echo "$FILE" | grep ".*\.c\|.*\.h\|.*\.S" > /dev/null 2>&1
 	then
@@ -60,4 +67,3 @@ while read -r FILE; do
 		fi
 	fi
 done <<< "$FILES"
-
