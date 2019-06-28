@@ -1,0 +1,18 @@
+#!/bin/sh
+
+alert() {
+	notify-send "command finished"
+	paplay /usr/share/sounds/ubuntu/stereo/phone-incoming-call.ogg
+}
+
+myname=`basename $0`
+cmd=$@
+started=`date +"%T"`
+cmdname=basename $1
+logfile=/tmp/$myname$cmdname$started
+echo "[$myname] started at:$started"
+eval $cmd | tee $logfile
+finished=`date +"%T"`
+echo "[$myname] finished at:$started"
+echo "log written to $logfile"
+alert
