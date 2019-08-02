@@ -8,6 +8,7 @@ borg create --verbose --stats --show-rc --list  $REMOTE::$DATE $HOME
 borg prune                          \
     --list                          \
     --show-rc                       \
+    --keep-within   7d              \
     --keep-daily    21              \
     --keep-weekly   20              \
     --keep-monthly  20              \
