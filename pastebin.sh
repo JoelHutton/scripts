@@ -1,6 +1,7 @@
 #!/bin/bash
-PASTE_TEXT="$(</dev/stdin)"
-echo -e $PASTE_TEXT
+set -x
+set -e
+PASTE_TEXT=`cat $1`
 RESPONSE=`curl --user "$USER" --data-urlencode "paste_text=$PASTE_TEXT" https://p.arm.com/`
 URL=`echo $RESPONSE | grep "Redirected\ to"`
 URL=`echo $URL | sed -e 's/.*\(http.*\)\".*/\1/'`
