@@ -1,2 +1,2 @@
-setxkbmap -layout "gb" -variant "dvorak"
 #!/bin/bash
+setxkbmap -layout "gb" -variant "dvorak" -option caps:swapescape

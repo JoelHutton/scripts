@@ -1,4 +1,3 @@
 #!/bin/bash
 
-setxkbmap -layout "gb"
-setxkbmap -option
+setxkbmap -layout "gb" -option
