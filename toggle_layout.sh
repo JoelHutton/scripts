@@ -8,4 +8,5 @@ then
 	xmodmap -e "keycode 108 = Alt_L"
 else
 	setxkbmap -layout "gb"
+	setxkbmap -option
 fi
