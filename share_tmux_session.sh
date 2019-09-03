@@ -1,5 +1,5 @@
 #!/bin/bash
-# Share current ssh session with a guest
+# Share current tmux session with a guest
 # Dependencies: tmux, xsel, ssh
 #
 # usage: share_tmux_session.sh [command]
