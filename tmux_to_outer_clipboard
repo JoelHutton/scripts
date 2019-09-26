@@ -1,0 +1,7 @@
+#!/bin/sh
+
+RSSH_IP=`echo $SSH_CLIENT | awk '{print $1}'`
+if [ ! -z "$RSSH_IP" ] && [ ! -z "$TMUX" ]
+then
+  tmux save-buffer - | ssh "$RSSH_IP" 'xsel -ib'
+fi
