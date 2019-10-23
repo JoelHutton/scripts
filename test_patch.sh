@@ -1,18 +1,23 @@
 #!/bin/bash
 
 DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
-PATCH=`readlink -e "$1"`
 
 set -x
 set -e
+PATCH=`readlink -e "$1"`
 
 test() {
   cd $DIR/gcc/objdir
-  rm -rf ./*
-  rm -rf $RESULT_DIR/*
+  if [ "1" -ne "$QUICK" ]
+  then
+    rm -rf $RESULT_DIR/*
+    BOOTSTRAP="--enable-bootstrap"
+  else
+    BOOTSTRAP="--disable-bootstrap"
+  fi
   echo `date --rfc-3339=seconds` "configuring" > $RESULT_DIR/stage.log
   ../src/configure --prefix=$DIR/gcc/install\
-    --disable-nls --disable-multilib \
+    --disable-nls $BOOTSTRAP --disable-multilib \
     --enable-languages=c,c++,fortran,lto | tee $RESULT_DIR/configure.log
   echo `date --rfc-3339=seconds` "building" >> $RESULT_DIR/stage.log
   make -j 100           | tee $RESULT_DIR/make.log
@@ -59,17 +64,17 @@ git checkout origin/master
 HEAD_COMMIT=`git rev-parse HEAD | cut -c1-5`
 PATCH_HASH=`md5sum $PATCH | awk '{print($1)}' | cut -c1-5`
 
-CLEAN_DIR=$DIR/$HEAD_COMMIT
-PATCH_DIR=$DIR/"$HEAD_COMMIT"-"$PATCH_HASH"
+CLEAN_DIR=$DIR/results/$HEAD_COMMIT
+PATCH_DIR=$DIR/results/"$HEAD_COMMIT"-"$PATCH_HASH"
 
 if [ ! -d $CLEAN_DIR ]
 then
-  mkdir $CLEAN_DIR
+  mkdir -p $CLEAN_DIR
   RESULT_DIR=$CLEAN_DIR test
 fi
 if [ ! -d $PATCH_DIR ]
 then
-  mkdir $PATCH_DIR
+  mkdir -p $PATCH_DIR
   cp $PATCH $PATCH_DIR
   cd $DIR/gcc/src
   ./gcc/contrib/check_GNU_style.sh $PATCH | tee $PATCH_DIR/$PATCH_HASH-patch_style
