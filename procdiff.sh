@@ -1,5 +1,5 @@
 #!/bin/bash
-# Watch 2 files until they differ
+# Monitor the output of 2 commands until they differ
 
 SCRIPTNAME=`basename $0`
 USAGE="""[INTERVAL=<interval>] $0 <program 1> <program 2>"""
