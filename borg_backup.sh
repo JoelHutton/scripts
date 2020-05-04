@@ -12,4 +12,4 @@ borg prune                          \
     --keep-daily    21              \
     --keep-weekly   20              \
     --keep-monthly  20              \
-    /mnt/data/borg
+    $REMOTE
