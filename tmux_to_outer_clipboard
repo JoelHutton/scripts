@@ -1,7 +1,19 @@
-#!/bin/sh
+#!/bin/bash
 
-RSSH_IP=`echo $SSH_CLIENT | awk '{print $1}'`
-if [ ! -z "$RSSH_IP" ] && [ ! -z "$TMUX" ]
+CLIPBOARD_OUTGOING_PORT=9001
+TMUX_BUFFER=`tmux save-buffer -`
+
+if [ ! -z "$CLIPBOARD_OUTGOING_PORT" ] && [ ! -z "$TMUX" ]
 then
-  tmux save-buffer - | ssh "$RSSH_IP" 'xsel -ib'
+  echo -ne '\x00' > ~/.tmux.clipboard
+  echo "$TMUX_BUFFER" >> ~/.tmux.clipboard
+  echo -e '\x00' >> ~/.tmux.clipboard
+  cat ~/.tmux.clipboard | nc -q 1 localhost "$CLIPBOARD_OUTGOING_PORT"
+  echo "done"
+fi
+
+if [ ! -z `which xsel` ]
+then
+  tmux save-buffer - | xsel -ib 2>/dev/null
+  echo "done"
 fi
