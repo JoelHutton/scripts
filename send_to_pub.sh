@@ -1,7 +1,5 @@
 #!/bin/bash
 
-set -e
-
 DATE=`date "+%Y-%m-%dT%H:%M:%S"`
 if [[ -z "$1" ]]
 then
@@ -14,19 +12,15 @@ then
 else
 	filename=$2
 fi
-if [[ -z "$SVALBARD_USER" ]]
-then
-	echo "set SVALBARD_USER variable" >&2
-	exit 1
-fi
-WEB_PATH=/usr/local/www/nginx/$SVALBARD_USER
+WEB_PATH=/var/www/html
 
 if [ -d "$1" ] ; then
-	scp -r $1 $SVALBARD_USER@svalbard.cambridge.arm.com:$WEB_PATH/$filename
-	ssh $SVALBARD_USER@svalbard.cambridge.arm.com "chmod -R 755 $WEB_PATH/$filename"
+	cp -r $1 $WEB_PATH/$filename
+	chmod -R 755 $WEB_PATH/$filename
 else
-	scp $1 $SVALBARD_USER@svalbard.cambridge.arm.com:$WEB_PATH/$filename
-	ssh $SVALBARD_USER@svalbard.cambridge.arm.com "chmod 644 $WEB_PATH/$filename"
+	cp $1 $WEB_PATH/$filename
+	chmod 644 $WEB_PATH/$filename
 fi
-echo "http://svalbard.cambridge.arm.com/$SVALBARD_USER/$filename" | xsel -ib
+echo "http://$HOSTNAME.cambridge.arm.com/$filename"
+echo "http://$HOSTNAME.cambridge.arm.com/$filename" | xsel -ib
 echo "link copied to clipboard"
