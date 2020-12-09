@@ -15,6 +15,7 @@
 
 GUEST_USER=guest
 SOCKET=`echo $TMUX | cut -f1 -d','`
+GUEST_SOCKET="/tmp/guest_tmux"
 SESSION=`echo $TMUX | cut -f3 -d','`
 SOCKET_DIR=`dirname $SOCKET`
 GUEST_LOGIN_FILE="/tmp/guest_login_command.sh"
@@ -29,19 +30,23 @@ then
   exit 1
 fi
 
+sudo rm -rf $GUEST_SOCKET
+
 if [ "$1" == "share" ]
 then
   echo "sharing current tmux session"
-  chmod 770 "$SOCKET"
+
+  sudo passwd guest
+  sudo ln $SOCKET $GUEST_SOCKET
+  sudo chown $GUEST_USER:$GUEST_USER $GUEST_SOCKET
   sudo chgrp "$GUEST_USER" "$SOCKET"
   sudo chgrp "$GUEST_USER" "$SOCKET_DIR"
   sudo usermod --expiredate "" "$GUEST_USER"
   echo "#!/bin/bash" > $GUEST_LOGIN_FILE
-  echo "tmux -S $SOCKET attach -t $SESSION" >> $GUEST_LOGIN_FILE
+  echo "tmux -S $GUEST_SOCKET attach -t $SESSION" >> $GUEST_LOGIN_FILE
   sudo chgrp "$GUEST_USER" "$GUEST_LOGIN_FILE"
-  sudo chmod 770 "$GUEST_LOGIN_FILE"
-  echo "ssh $GUEST_USER@$HOSTNAME" | xsel -ib
-  echo "\"ssh $GUEST_USER@$HOSTNAME\" copied to clipboard"
+  sudo chmod 750 "$GUEST_LOGIN_FILE"
+  echo "to connect \"ssh $GUEST_USER@$HOSTNAME\"" | xsel -ib
 else
   echo "unsharing current tmux session"
   chmod 700 "$SOCKET"
